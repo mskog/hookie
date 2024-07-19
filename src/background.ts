@@ -20,18 +20,36 @@ function setupContextMenu() {
 }
 
 function setupContextMenuListener() {
-  chrome.contextMenus.onClicked.addListener((event) => {
+  chrome.contextMenus.onClicked.addListener((event, tab) => {
     chrome.storage.sync.get({ actions: [] }, (result) => {
       const actions: Action[] = result.actions
       const action = actions.find((action) => action.url === event.menuItemId)
 
       if (action) {
+        let paramValue: string
+
+        switch (action.context) {
+          case "selection":
+            paramValue = event.selectionText
+              ? encodeURIComponent(event.selectionText)
+              : event.pageUrl
+            break
+          case "link":
+            paramValue = event.linkUrl || event.pageUrl
+            break
+          case "image":
+            paramValue = event.srcUrl || event.pageUrl
+            break
+          default:
+            paramValue = event.pageUrl
+        }
+
+        const url = `${action.url}?${action.parameter}=${paramValue}`
+
         if (action.type === ActionType.Redirect) {
-          chrome.tabs.create({
-            url: `${action.url}?${action.parameter}=${event.pageUrl}`
-          })
+          chrome.tabs.create({ url })
         } else {
-          fetch(`${action.url}?${action.parameter}=${event.pageUrl}`)
+          fetch(url)
         }
       }
     })
