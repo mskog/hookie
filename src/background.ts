@@ -1,57 +1,51 @@
+import type { Action } from "./types"
+import { ActionType } from "./types"
+
 export {}
 
-enum ActionType {
-  Redirect = "Redirect",
-  Background = "Background"
-}
+function setupContextMenu() {
+  chrome.storage.sync.get({ actions: [] }, (result) => {
+    const actions: Action[] = result.actions
 
-interface Action {
-  url: string
-  name: string
-  parameter: string
-  context: chrome.contextMenus.ContextType
-  type: ActionType
-}
-
-chrome.runtime.onInstalled.addListener(function () {
-  chrome.storage.sync.get({ url: "" }, (result) => {
-    fetch(result.url)
-      .then((response) => response.json())
-      .then((data: any[]) => {
-        return data.map(
-          (item): Action => ({
-            url: item.url,
-            name: item.name,
-            parameter: item.parameter,
-            context: item.context,
-            type: (item.type as ActionType) || ActionType.Background
-          })
-        )
-      })
-      .then((actions: Action[]) => {
-        actions.forEach((action) => {
-          chrome.contextMenus.create({
-            title: action.name,
-            contexts: ["page"],
-            id: action.url
-          })
-        })
-
-        chrome.contextMenus.onClicked.addListener((event) => {
-          const action = actions.find(
-            (action) => action.url === event.menuItemId
-          )
-
-          if (action) {
-            if (action.type === ActionType.Redirect) {
-              chrome.tabs.create({
-                url: `${action.url}?${action.parameter}=${event.pageUrl}`
-              })
-            } else {
-              fetch(`${action.url}?${action.parameter}=${event.pageUrl}`)
-            }
-          }
+    chrome.contextMenus.removeAll(() => {
+      actions.forEach((action) => {
+        chrome.contextMenus.create({
+          title: action.name,
+          contexts: [action.context],
+          id: action.url
         })
       })
+    })
   })
+}
+
+function setupContextMenuListener() {
+  chrome.contextMenus.onClicked.addListener((event) => {
+    chrome.storage.sync.get({ actions: [] }, (result) => {
+      const actions: Action[] = result.actions
+      const action = actions.find((action) => action.url === event.menuItemId)
+
+      if (action) {
+        if (action.type === ActionType.Redirect) {
+          chrome.tabs.create({
+            url: `${action.url}?${action.parameter}=${event.pageUrl}`
+          })
+        } else {
+          fetch(`${action.url}?${action.parameter}=${event.pageUrl}`)
+        }
+      }
+    })
+  })
+}
+
+setupContextMenu()
+setupContextMenuListener()
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === "sync" && changes.actions) {
+    setupContextMenu()
+  }
 })
+
+chrome.runtime.onInstalled.addListener(setupContextMenu)
+chrome.runtime.onStartup.addListener(setupContextMenu)
