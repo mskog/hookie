@@ -44,12 +44,22 @@ function setupContextMenuListener() {
             paramValue = event.pageUrl
         }
 
-        const url = `${action.url}?${action.parameter}=${paramValue}`
-
         if (action.type === ActionType.Redirect) {
+          const url = `${action.url}?${action.parameter}=${paramValue}`
           chrome.tabs.create({ url })
         } else {
-          fetch(url)
+          if (action.method === "GET") {
+            const url = `${action.url}?${action.parameter}=${paramValue}`
+            fetch(url)
+          } else if (action.method === "POST") {
+            fetch(action.url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ [action.parameter]: paramValue })
+            })
+          }
         }
       }
     })

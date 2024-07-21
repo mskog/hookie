@@ -29,7 +29,8 @@ const OptionsPage: React.FC = () => {
       name: "",
       parameter: "",
       context: "page",
-      type: ActionType.Background
+      type: ActionType.Background,
+      method: "GET"
     }
     setEditingAction(newAction)
   }
@@ -75,6 +76,7 @@ const OptionsPage: React.FC = () => {
             <p>Parameter: {action.parameter}</p>
             <p>Type: {action.type}</p>
             <p>Context: {action.context}</p>
+            <p>HTTP Method: {action.method}</p>
             <div className="mt-2">
               <button
                 onClick={() => handleEditAction(action)}
@@ -169,6 +171,21 @@ const OptionsPage: React.FC = () => {
                 <option value="image">Image</option>
                 <option value="video">Video</option>
                 <option value="audio">Audio</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2">HTTP Method:</label>
+              <select
+                value={editingAction.method}
+                onChange={(e) =>
+                  setEditingAction({
+                    ...editingAction,
+                    method: e.target.value as "GET" | "POST"
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
               </select>
             </div>
             <button

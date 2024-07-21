@@ -9,4 +9,5 @@ export interface Action {
   parameter: string
   context: chrome.contextMenus.ContextType
   type: ActionType
+  method: "GET" | "POST"
 }
