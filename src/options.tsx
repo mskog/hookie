@@ -1,6 +1,7 @@
 import "~style.css"
 
 import React, { useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 import type { Action } from "./types"
 import { ActionType } from "./types"
@@ -25,6 +26,7 @@ const OptionsPage: React.FC = () => {
 
   const handleAddAction = () => {
     const newAction: Action = {
+      id: uuidv4(),
       url: "",
       name: "",
       parameter: "",
@@ -40,12 +42,12 @@ const OptionsPage: React.FC = () => {
   }
 
   const handleDeleteAction = (actionToDelete: Action) => {
-    setActions(actions.filter((action) => action !== actionToDelete))
+    setActions(actions.filter((action) => action.id !== actionToDelete.id))
   }
 
   const handleSaveAction = () => {
     if (editingAction) {
-      const actionIndex = actions.findIndex((a) => a.url === editingAction.url)
+      const actionIndex = actions.findIndex((a) => a.id === editingAction.id)
       if (actionIndex >= 0) {
         // Update existing action
         const newActions = [...actions]
@@ -67,9 +69,9 @@ const OptionsPage: React.FC = () => {
         </h1>
 
         <h2 className="mt-8 mb-4 text-2xl font-bold text-gray-800">Actions</h2>
-        {actions.map((action, index) => (
+        {actions.map((action) => (
           <div
-            key={index}
+            key={action.id}
             className="p-4 mb-4 border border-gray-300 rounded-md">
             <h3 className="text-lg font-semibold">{action.name}</h3>
             <p>URL: {action.url}</p>
@@ -101,7 +103,7 @@ const OptionsPage: React.FC = () => {
         {editingAction && (
           <div className="p-4 mt-8 border border-gray-300 rounded-md">
             <h3 className="mb-4 text-xl font-bold">
-              {editingAction.url ? "Edit Action" : "New Action"}
+              {editingAction.id ? "Edit Action" : "New Action"}
             </h3>
             <div className="mb-4">
               <label className="block mb-2">Name:</label>
@@ -196,11 +198,13 @@ const OptionsPage: React.FC = () => {
           </div>
         )}
 
-        <button
-          onClick={handleSave}
-          className="w-full px-4 py-2 mt-8 text-white transition-colors duration-300 bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-          Save All Actions
-        </button>
+        <div className="flex justify-between mt-8">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 text-white transition-colors duration-300 bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+            Save All Actions
+          </button>
+        </div>
 
         {status && (
           <div className="p-2 mt-4 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">

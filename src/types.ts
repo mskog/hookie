@@ -4,6 +4,7 @@ export enum ActionType {
 }
 
 export interface Action {
+  id: string
   url: string
   name: string
   parameter: string
