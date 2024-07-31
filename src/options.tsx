@@ -17,13 +17,6 @@ const OptionsPage: React.FC = () => {
     })
   }, [])
 
-  const handleSave = () => {
-    chrome.storage.sync.set({ actions }, () => {
-      setStatus("Options saved successfully!")
-      setTimeout(() => setStatus(""), 3000)
-    })
-  }
-
   const handleAddAction = () => {
     const newAction: Action = {
       id: uuidv4(),
@@ -48,15 +41,20 @@ const OptionsPage: React.FC = () => {
   const handleSaveAction = () => {
     if (editingAction) {
       const actionIndex = actions.findIndex((a) => a.id === editingAction.id)
+      let newActions: Action[]
       if (actionIndex >= 0) {
         // Update existing action
-        const newActions = [...actions]
+        newActions = [...actions]
         newActions[actionIndex] = editingAction
-        setActions(newActions)
       } else {
         // Add new action
-        setActions([...actions, editingAction])
+        newActions = [...actions, editingAction]
       }
+      setActions(newActions)
+      chrome.storage.sync.set({ actions: newActions }, () => {
+        setStatus("Action saved successfully!")
+        setTimeout(() => setStatus(""), 3000)
+      })
       setEditingAction(null)
     }
   }
@@ -85,8 +83,10 @@ const OptionsPage: React.FC = () => {
           )
           if (confirmImport) {
             setActions(importedActions)
-            setStatus("Actions imported successfully!")
-            setTimeout(() => setStatus(""), 3000)
+            chrome.storage.sync.set({ actions: importedActions }, () => {
+              setStatus("Actions imported and saved successfully!")
+              setTimeout(() => setStatus(""), 3000)
+            })
           } else {
             setStatus("Import cancelled.")
             setTimeout(() => setStatus(""), 3000)
@@ -237,12 +237,7 @@ const OptionsPage: React.FC = () => {
           </div>
         )}
 
-        <div className="flex justify-between mt-8">
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 text-white transition-colors duration-300 bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            Save All Actions
-          </button>
+        <div className="flex justify-end mt-8">
           <div className="flex space-x-2">
             <button
               onClick={handleExport}
