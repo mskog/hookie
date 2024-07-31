@@ -33,7 +33,7 @@ Hookie is a Chrome extension that allows users to create custom context menu act
 
 ## Building for Production
 
-To create a production bundle for your extension:
+To create a production bundle:
 
 ```bash
 pnpm build
