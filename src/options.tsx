@@ -3,6 +3,7 @@ import "~style.css"
 import React, { useEffect, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 
+import ActionForm from "./components/ActionForm"
 import type { Action } from "./types"
 import { ActionType } from "./types"
 
@@ -15,7 +16,7 @@ const ActionList: React.FC<{
     {actions.map((action) => (
       <div
         key={action.id}
-        className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+        className="p-4 transition-shadow duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
         <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
         <p className="text-sm text-gray-600">URL: {action.url}</p>
         <p className="text-sm text-gray-600">Parameter: {action.parameter}</p>
@@ -38,108 +39,6 @@ const ActionList: React.FC<{
     ))}
   </div>
 )
-
-const ActionForm: React.FC<{
-  action: Action
-  onSave: (action: Action) => void
-  onCancel: () => void
-}> = ({ action, onSave, onCancel }) => {
-  const [editingAction, setEditingAction] = useState<Action>(action)
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setEditingAction((prev) => ({ ...prev, [name]: value }))
-  }
-
-  return (
-    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-      <h3 className="mb-4 text-xl font-bold text-gray-800">
-        {action.id ? "Edit Action" : "New Action"}
-      </h3>
-      <div className="space-y-4">
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={editingAction.name}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">URL:</label>
-          <input
-            type="text"
-            name="url"
-            value={editingAction.url}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Parameter:</label>
-          <input
-            type="text"
-            name="parameter"
-            value={editingAction.parameter}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Type:</label>
-          <select
-            name="type"
-            value={editingAction.type}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value={ActionType.Background}>Background</option>
-            <option value={ActionType.Redirect}>Redirect</option>
-          </select>
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Context:</label>
-          <select
-            name="context"
-            value={editingAction.context}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="page">Page</option>
-            <option value="selection">Selection</option>
-            <option value="link">Link</option>
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-            <option value="audio">Audio</option>
-          </select>
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">HTTP Method:</label>
-          <select
-            name="method"
-            value={editingAction.method}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-          </select>
-        </div>
-      </div>
-      <div className="mt-6 space-x-2">
-        <button
-          onClick={() => onSave(editingAction)}
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-          Save Action
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-          Cancel
-        </button>
-      </div>
-    </div>
-  )
-}
 
 const OptionsPage: React.FC = () => {
   const [actions, setActions] = useState<Action[]>([])
@@ -173,14 +72,17 @@ const OptionsPage: React.FC = () => {
   }
 
   const handleDeleteAction = (actionToDelete: Action) => {
-    const newActions = actions.filter(
-      (action) => action.id !== actionToDelete.id
-    )
-    setActions(newActions)
-    chrome.storage.sync.set({ actions: newActions }, () => {
-      setStatus("Action deleted and saved successfully!")
-      setTimeout(() => setStatus(""), 3000)
-    })
+    const confirmDelete = window.confirm(`Are you sure you want to delete the action "${actionToDelete.name}"?`)
+    if (confirmDelete) {
+      const newActions = actions.filter(
+        (action) => action.id !== actionToDelete.id
+      )
+      setActions(newActions)
+      chrome.storage.sync.set({ actions: newActions }, () => {
+        setStatus("Action deleted and saved successfully!")
+        setTimeout(() => setStatus(""), 3000)
+      })
+    }
   }
 
   const handleSaveAction = (actionToSave: Action) => {
@@ -249,12 +151,12 @@ const OptionsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto p-8">
+      <div className="container p-8 mx-auto">
         <h1 className="mb-6 text-3xl font-bold text-gray-800">
           Hookie Options
         </h1>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="overflow-hidden bg-white rounded-lg shadow-md">
           <div className="flex border-b border-gray-200">
             <button
               className={`flex-1 py-2 px-4 text-center ${
@@ -295,7 +197,7 @@ const OptionsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-end space-x-4">
+        <div className="flex justify-end mt-8 space-x-4">
           <button
             onClick={handleExport}
             className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -313,7 +215,7 @@ const OptionsPage: React.FC = () => {
         </div>
 
         {status && (
-          <div className="mt-4 p-2 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">
+          <div className="p-2 mt-4 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">
             {status}
           </div>
         )}
