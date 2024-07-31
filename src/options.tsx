@@ -72,14 +72,17 @@ const OptionsPage: React.FC = () => {
   }
 
   const handleDeleteAction = (actionToDelete: Action) => {
-    const newActions = actions.filter(
-      (action) => action.id !== actionToDelete.id
-    )
-    setActions(newActions)
-    chrome.storage.sync.set({ actions: newActions }, () => {
-      setStatus("Action deleted and saved successfully!")
-      setTimeout(() => setStatus(""), 3000)
-    })
+    const confirmDelete = window.confirm(`Are you sure you want to delete the action "${actionToDelete.name}"?`)
+    if (confirmDelete) {
+      const newActions = actions.filter(
+        (action) => action.id !== actionToDelete.id
+      )
+      setActions(newActions)
+      chrome.storage.sync.set({ actions: newActions }, () => {
+        setStatus("Action deleted and saved successfully!")
+        setTimeout(() => setStatus(""), 3000)
+      })
+    }
   }
 
   const handleSaveAction = (actionToSave: Action) => {
