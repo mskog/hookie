@@ -39,3 +39,4 @@ keys.json
 .tsbuildinfo
 
 .vscode
+.aider*
