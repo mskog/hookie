@@ -1,5 +1,7 @@
 import React, { useState } from "react"
-import { Action, ActionType } from "../types"
+
+import type { Action } from "../types"
+import { ActionType } from "../types"
 
 interface ActionFormProps {
   action: Action
@@ -26,7 +28,11 @@ const validateAction = (action: Action): { [key: string]: string } => {
   return errors
 }
 
-const ActionForm: React.FC<ActionFormProps> = ({ action, onSave, onCancel }) => {
+const ActionForm: React.FC<ActionFormProps> = ({
+  action,
+  onSave,
+  onCancel
+}) => {
   const [editingAction, setEditingAction] = useState<Action>(action)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
