@@ -1,24 +1,39 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# Hookie - Custom Context Menu Actions for Chrome
+
+Hookie is a Chrome extension that allows users to create custom context menu actions for various web interactions. Built with [Plasmo](https://docs.plasmo.com/), it provides a flexible way to enhance your browsing experience by adding personalized actions to your right-click menu.
+
+## Features
+
+- Create custom context menu actions for different contexts (page, selection, link, image, video, audio)
+- Choose between redirect or background actions
+- Support for both GET and POST HTTP methods
+- Easy-to-use options page for managing actions
+- Import and export functionality for backing up and sharing actions
 
 ## Getting Started
 
-First, run the development server:
+1. Clone this repository
+2. Install dependencies:
+   ```bash
+   pnpm install
+   # or
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   pnpm dev
+   # or
+   npm run dev
+   ```
+4. Load the extension in Chrome:
+   - Go to `chrome://extensions/`
+   - Enable "Developer mode"
+   - Click "Load unpacked"
+   - Select the `build/chrome-mv3-dev` directory
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
+## Building for Production
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
-
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
-
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
-
-## Making production build
-
-Run the following:
+To create a production bundle for your extension:
 
 ```bash
 pnpm build
@@ -26,8 +41,12 @@ pnpm build
 npm run build
 ```
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+This will generate a production-ready bundle in the `build` directory.
 
-## Submit to the webstores
+## Contributing
 
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
