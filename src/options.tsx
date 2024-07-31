@@ -6,14 +6,14 @@ import { v4 as uuidv4 } from "uuid"
 import type { Action } from "./types"
 import { ActionType } from "./types"
 
-const validateAction = (action: Action): string[] => {
-  const errors: string[] = []
-  if (!action.name.trim()) errors.push("Name is required")
-  if (!action.url.trim()) errors.push("URL is required")
-  if (!action.parameter.trim()) errors.push("Parameter is required")
-  if (!action.context) errors.push("Context is required")
-  if (!action.type) errors.push("Type is required")
-  if (!action.method) errors.push("HTTP Method is required")
+const validateAction = (action: Action): { [key: string]: string } => {
+  const errors: { [key: string]: string } = {}
+  if (!action.name.trim()) errors.name = "Name is required"
+  if (!action.url.trim()) errors.url = "URL is required"
+  if (!action.parameter.trim()) errors.parameter = "Parameter is required"
+  if (!action.context) errors.context = "Context is required"
+  if (!action.type) errors.type = "Type is required"
+  if (!action.method) errors.method = "HTTP Method is required"
   return errors
 }
 
@@ -56,12 +56,23 @@ const ActionForm: React.FC<{
   onCancel: () => void
 }> = ({ action, onSave, onCancel }) => {
   const [editingAction, setEditingAction] = useState<Action>(action)
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target
     setEditingAction((prev) => ({ ...prev, [name]: value }))
+    setErrors((prev) => ({ ...prev, [name]: "" }))
+  }
+
+  const handleSave = () => {
+    const validationErrors = validateAction(editingAction)
+    if (Object.keys(validationErrors).length === 0) {
+      onSave(editingAction)
+    } else {
+      setErrors(validationErrors)
+    }
   }
 
   return (
@@ -79,8 +90,13 @@ const ActionForm: React.FC<{
             name="name"
             value={editingAction.name}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.name ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -91,8 +107,13 @@ const ActionForm: React.FC<{
             name="url"
             value={editingAction.url}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.url ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {errors.url && (
+            <p className="mt-1 text-sm text-red-500">{errors.url}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -103,8 +124,13 @@ const ActionForm: React.FC<{
             name="parameter"
             value={editingAction.parameter}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.parameter ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {errors.parameter && (
+            <p className="mt-1 text-sm text-red-500">{errors.parameter}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -114,10 +140,15 @@ const ActionForm: React.FC<{
             name="type"
             value={editingAction.type}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.type ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value={ActionType.Background}>Background</option>
             <option value={ActionType.Redirect}>Redirect</option>
           </select>
+          {errors.type && (
+            <p className="mt-1 text-sm text-red-500">{errors.type}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -127,7 +158,9 @@ const ActionForm: React.FC<{
             name="context"
             value={editingAction.context}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.context ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="page">Page</option>
             <option value="selection">Selection</option>
             <option value="link">Link</option>
@@ -135,6 +168,9 @@ const ActionForm: React.FC<{
             <option value="video">Video</option>
             <option value="audio">Audio</option>
           </select>
+          {errors.context && (
+            <p className="mt-1 text-sm text-red-500">{errors.context}</p>
+          )}
         </div>
         <div>
           <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -144,15 +180,20 @@ const ActionForm: React.FC<{
             name="method"
             value={editingAction.method}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.method ? "border-red-500" : "border-gray-300"
+            }`}>
             <option value="GET">GET</option>
             <option value="POST">POST</option>
           </select>
+          {errors.method && (
+            <p className="mt-1 text-sm text-red-500">{errors.method}</p>
+          )}
         </div>
       </div>
       <div className="mt-6 space-x-2">
         <button
-          onClick={() => onSave(editingAction)}
+          onClick={handleSave}
           className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Save Action
         </button>
@@ -209,13 +250,6 @@ const OptionsPage: React.FC = () => {
   }
 
   const handleSaveAction = (actionToSave: Action) => {
-    const errors = validateAction(actionToSave)
-    if (errors.length > 0) {
-      setStatus(errors.join(", "))
-      setTimeout(() => setStatus(""), 5000)
-      return
-    }
-
     const actionIndex = actions.findIndex((a) => a.id === actionToSave.id)
     let newActions: Action[]
     if (actionIndex >= 0) {
