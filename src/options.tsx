@@ -9,7 +9,15 @@ import { ActionType } from "./types"
 const validateAction = (action: Action): { [key: string]: string } => {
   const errors: { [key: string]: string } = {}
   if (!action.name.trim()) errors.name = "Name is required"
-  if (!action.url.trim()) errors.url = "URL is required"
+  if (!action.url.trim()) {
+    errors.url = "URL is required"
+  } else {
+    try {
+      new URL(action.url)
+    } catch (_) {
+      errors.url = "Invalid URL format"
+    }
+  }
   if (!action.parameter.trim()) errors.parameter = "Parameter is required"
   if (!action.context) errors.context = "Context is required"
   if (!action.type) errors.type = "Type is required"
