@@ -6,10 +6,146 @@ import { v4 as uuidv4 } from "uuid"
 import type { Action } from "./types"
 import { ActionType } from "./types"
 
+const ActionList: React.FC<{
+  actions: Action[]
+  onEdit: (action: Action) => void
+  onDelete: (action: Action) => void
+}> = ({ actions, onEdit, onDelete }) => (
+  <div className="space-y-4">
+    {actions.map((action) => (
+      <div
+        key={action.id}
+        className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+        <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
+        <p className="text-sm text-gray-600">URL: {action.url}</p>
+        <p className="text-sm text-gray-600">Parameter: {action.parameter}</p>
+        <p className="text-sm text-gray-600">Type: {action.type}</p>
+        <p className="text-sm text-gray-600">Context: {action.context}</p>
+        <p className="text-sm text-gray-600">HTTP Method: {action.method}</p>
+        <div className="mt-3 space-x-2">
+          <button
+            onClick={() => onEdit(action)}
+            className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Edit
+          </button>
+          <button
+            onClick={() => onDelete(action)}
+            className="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+            Delete
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)
+
+const ActionForm: React.FC<{
+  action: Action
+  onSave: (action: Action) => void
+  onCancel: () => void
+}> = ({ action, onSave, onCancel }) => {
+  const [editingAction, setEditingAction] = useState<Action>(action)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setEditingAction((prev) => ({ ...prev, [name]: value }))
+  }
+
+  return (
+    <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+      <h3 className="mb-4 text-xl font-bold text-gray-800">
+        {action.id ? "Edit Action" : "New Action"}
+      </h3>
+      <div className="space-y-4">
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Name:</label>
+          <input
+            type="text"
+            name="name"
+            value={editingAction.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">URL:</label>
+          <input
+            type="text"
+            name="url"
+            value={editingAction.url}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Parameter:</label>
+          <input
+            type="text"
+            name="parameter"
+            value={editingAction.parameter}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Type:</label>
+          <select
+            name="type"
+            value={editingAction.type}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value={ActionType.Background}>Background</option>
+            <option value={ActionType.Redirect}>Redirect</option>
+          </select>
+        </div>
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Context:</label>
+          <select
+            name="context"
+            value={editingAction.context}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="page">Page</option>
+            <option value="selection">Selection</option>
+            <option value="link">Link</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="audio">Audio</option>
+          </select>
+        </div>
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">HTTP Method:</label>
+          <select
+            name="method"
+            value={editingAction.method}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+          </select>
+        </div>
+      </div>
+      <div className="mt-6 space-x-2">
+        <button
+          onClick={() => onSave(editingAction)}
+          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+          Save Action
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
 const OptionsPage: React.FC = () => {
   const [actions, setActions] = useState<Action[]>([])
   const [status, setStatus] = useState<string>("")
   const [editingAction, setEditingAction] = useState<Action | null>(null)
+  const [activeTab, setActiveTab] = useState<"list" | "form">("list")
 
   useEffect(() => {
     chrome.storage.sync.get({ actions: [] }, (items) => {
@@ -28,10 +164,12 @@ const OptionsPage: React.FC = () => {
       method: "GET"
     }
     setEditingAction(newAction)
+    setActiveTab("form")
   }
 
   const handleEditAction = (action: Action) => {
     setEditingAction({ ...action })
+    setActiveTab("form")
   }
 
   const handleDeleteAction = (actionToDelete: Action) => {
@@ -45,25 +183,27 @@ const OptionsPage: React.FC = () => {
     })
   }
 
-  const handleSaveAction = () => {
-    if (editingAction) {
-      const actionIndex = actions.findIndex((a) => a.id === editingAction.id)
-      let newActions: Action[]
-      if (actionIndex >= 0) {
-        // Update existing action
-        newActions = [...actions]
-        newActions[actionIndex] = editingAction
-      } else {
-        // Add new action
-        newActions = [...actions, editingAction]
-      }
-      setActions(newActions)
-      chrome.storage.sync.set({ actions: newActions }, () => {
-        setStatus("Action saved successfully!")
-        setTimeout(() => setStatus(""), 3000)
-      })
-      setEditingAction(null)
+  const handleSaveAction = (actionToSave: Action) => {
+    const actionIndex = actions.findIndex((a) => a.id === actionToSave.id)
+    let newActions: Action[]
+    if (actionIndex >= 0) {
+      newActions = [...actions]
+      newActions[actionIndex] = actionToSave
+    } else {
+      newActions = [...actions, actionToSave]
     }
+    setActions(newActions)
+    chrome.storage.sync.set({ actions: newActions }, () => {
+      setStatus("Action saved successfully!")
+      setTimeout(() => setStatus(""), 3000)
+    })
+    setEditingAction(null)
+    setActiveTab("list")
+  }
+
+  const handleCancelEdit = () => {
+    setEditingAction(null)
+    setActiveTab("list")
   }
 
   const handleExport = () => {
@@ -108,163 +248,72 @@ const OptionsPage: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-2xl p-8 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen bg-gray-100">
+      <div className="container mx-auto p-8">
         <h1 className="mb-6 text-3xl font-bold text-gray-800">
           Hookie Options
         </h1>
 
-        <h2 className="mt-8 mb-4 text-2xl font-bold text-gray-800">Actions</h2>
-        {actions.map((action) => (
-          <div
-            key={action.id}
-            className="p-4 mb-4 border border-gray-300 rounded-md">
-            <h3 className="text-lg font-semibold">{action.name}</h3>
-            <p>URL: {action.url}</p>
-            <p>Parameter: {action.parameter}</p>
-            <p>Type: {action.type}</p>
-            <p>Context: {action.context}</p>
-            <p>HTTP Method: {action.method}</p>
-            <div className="mt-2">
-              <button
-                onClick={() => handleEditAction(action)}
-                className="px-3 py-1 mr-2 text-white bg-blue-500 rounded">
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteAction(action)}
-                className="px-3 py-1 text-white bg-red-500 rounded">
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-
-        <button
-          onClick={handleAddAction}
-          className="px-4 py-2 mt-4 text-white bg-green-500 rounded">
-          Add Action
-        </button>
-
-        {editingAction && (
-          <div className="p-4 mt-8 border border-gray-300 rounded-md">
-            <h3 className="mb-4 text-xl font-bold">
-              {editingAction.id ? "Edit Action" : "New Action"}
-            </h3>
-            <div className="mb-4">
-              <label className="block mb-2">Name:</label>
-              <input
-                type="text"
-                value={editingAction.name}
-                onChange={(e) =>
-                  setEditingAction({ ...editingAction, name: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">URL:</label>
-              <input
-                type="text"
-                value={editingAction.url}
-                onChange={(e) =>
-                  setEditingAction({ ...editingAction, url: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Parameter:</label>
-              <input
-                type="text"
-                value={editingAction.parameter}
-                onChange={(e) =>
-                  setEditingAction({
-                    ...editingAction,
-                    parameter: e.target.value
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Type:</label>
-              <select
-                value={editingAction.type}
-                onChange={(e) =>
-                  setEditingAction({
-                    ...editingAction,
-                    type: e.target.value as ActionType
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md">
-                <option value={ActionType.Background}>Background</option>
-                <option value={ActionType.Redirect}>Redirect</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Context:</label>
-              <select
-                value={editingAction.context}
-                onChange={(e) =>
-                  setEditingAction({
-                    ...editingAction,
-                    context: e.target.value as chrome.contextMenus.ContextType
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md">
-                <option value="page">Page</option>
-                <option value="selection">Selection</option>
-                <option value="link">Link</option>
-                <option value="image">Image</option>
-                <option value="video">Video</option>
-                <option value="audio">Audio</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">HTTP Method:</label>
-              <select
-                value={editingAction.method}
-                onChange={(e) =>
-                  setEditingAction({
-                    ...editingAction,
-                    method: e.target.value as "GET" | "POST"
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md">
-                <option value="GET">GET</option>
-                <option value="POST">POST</option>
-              </select>
-            </div>
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="flex border-b border-gray-200">
             <button
-              onClick={handleSaveAction}
-              className="px-4 py-2 text-white bg-indigo-500 rounded">
-              Save Action
+              className={`flex-1 py-2 px-4 text-center ${
+                activeTab === "list"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+              onClick={() => setActiveTab("list")}>
+              Action List
+            </button>
+            <button
+              className={`flex-1 py-2 px-4 text-center ${
+                activeTab === "form"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+              onClick={handleAddAction}>
+              {editingAction ? "Edit Action" : "Add Action"}
             </button>
           </div>
-        )}
 
-        <div className="flex justify-end mt-8">
-          <div className="flex space-x-2">
-            <button
-              onClick={handleExport}
-              className="px-4 py-2 text-white transition-colors duration-300 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-              Export Actions to JSON
-            </button>
-            <label className="px-4 py-2 text-white transition-colors duration-300 bg-green-600 rounded-md cursor-pointer hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-              Import Actions
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                className="hidden"
+          <div className="p-6">
+            {activeTab === "list" ? (
+              <ActionList
+                actions={actions}
+                onEdit={handleEditAction}
+                onDelete={handleDeleteAction}
               />
-            </label>
+            ) : (
+              editingAction && (
+                <ActionForm
+                  action={editingAction}
+                  onSave={handleSaveAction}
+                  onCancel={handleCancelEdit}
+                />
+              )
+            )}
           </div>
         </div>
 
+        <div className="mt-8 flex justify-end space-x-4">
+          <button
+            onClick={handleExport}
+            className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Export Actions
+          </button>
+          <label className="px-4 py-2 text-white bg-green-500 rounded-md cursor-pointer hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            Import Actions
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="hidden"
+            />
+          </label>
+        </div>
+
         {status && (
-          <div className="p-2 mt-4 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">
+          <div className="mt-4 p-2 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">
             {status}
           </div>
         )}
