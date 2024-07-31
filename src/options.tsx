@@ -61,6 +61,16 @@ const OptionsPage: React.FC = () => {
     }
   }
 
+  const handleExport = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(actions, null, 2))
+    const downloadAnchorNode = document.createElement('a')
+    downloadAnchorNode.setAttribute("href", dataStr)
+    downloadAnchorNode.setAttribute("download", "actions.json")
+    document.body.appendChild(downloadAnchorNode)
+    downloadAnchorNode.click()
+    downloadAnchorNode.remove()
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-2xl p-8 bg-white rounded-lg shadow-md">
@@ -203,6 +213,11 @@ const OptionsPage: React.FC = () => {
             onClick={handleSave}
             className="px-4 py-2 text-white transition-colors duration-300 bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             Save All Actions
+          </button>
+          <button
+            onClick={handleExport}
+            className="px-4 py-2 text-white transition-colors duration-300 bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Export Actions to JSON
           </button>
         </div>
 
