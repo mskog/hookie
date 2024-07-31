@@ -26,7 +26,7 @@ const ActionList: React.FC<{
     {actions.map((action) => (
       <div
         key={action.id}
-        className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+        className="p-4 transition-shadow duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
         <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
         <p className="text-sm text-gray-600">URL: {action.url}</p>
         <p className="text-sm text-gray-600">Parameter: {action.parameter}</p>
@@ -57,7 +57,9 @@ const ActionForm: React.FC<{
 }> = ({ action, onSave, onCancel }) => {
   const [editingAction, setEditingAction] = useState<Action>(action)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
     setEditingAction((prev) => ({ ...prev, [name]: value }))
   }
@@ -69,7 +71,9 @@ const ActionForm: React.FC<{
       </h3>
       <div className="space-y-4">
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Name:</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Name:
+          </label>
           <input
             type="text"
             name="name"
@@ -79,7 +83,9 @@ const ActionForm: React.FC<{
           />
         </div>
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">URL:</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            URL:
+          </label>
           <input
             type="text"
             name="url"
@@ -89,7 +95,9 @@ const ActionForm: React.FC<{
           />
         </div>
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Parameter:</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Parameter:
+          </label>
           <input
             type="text"
             name="parameter"
@@ -99,7 +107,9 @@ const ActionForm: React.FC<{
           />
         </div>
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Type:</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Type:
+          </label>
           <select
             name="type"
             value={editingAction.type}
@@ -110,7 +120,9 @@ const ActionForm: React.FC<{
           </select>
         </div>
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Context:</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Context:
+          </label>
           <select
             name="context"
             value={editingAction.context}
@@ -125,7 +137,9 @@ const ActionForm: React.FC<{
           </select>
         </div>
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">HTTP Method:</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            HTTP Method:
+          </label>
           <select
             name="method"
             value={editingAction.method}
@@ -267,12 +281,12 @@ const OptionsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto p-8">
+      <div className="container p-8 mx-auto">
         <h1 className="mb-6 text-3xl font-bold text-gray-800">
           Hookie Options
         </h1>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="overflow-hidden bg-white rounded-lg shadow-md">
           <div className="flex border-b border-gray-200">
             <button
               className={`flex-1 py-2 px-4 text-center ${
@@ -313,7 +327,7 @@ const OptionsPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-end space-x-4">
+        <div className="flex justify-end mt-8 space-x-4">
           <button
             onClick={handleExport}
             className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -331,7 +345,7 @@ const OptionsPage: React.FC = () => {
         </div>
 
         {status && (
-          <div className="mt-4 p-2 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">
+          <div className="p-2 mt-4 text-center text-green-700 bg-green-100 border border-green-400 rounded-md">
             {status}
           </div>
         )}
