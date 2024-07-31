@@ -6,6 +6,17 @@ import { v4 as uuidv4 } from "uuid"
 import type { Action } from "./types"
 import { ActionType } from "./types"
 
+const validateAction = (action: Action): string[] => {
+  const errors: string[] = []
+  if (!action.name.trim()) errors.push("Name is required")
+  if (!action.url.trim()) errors.push("URL is required")
+  if (!action.parameter.trim()) errors.push("Parameter is required")
+  if (!action.context) errors.push("Context is required")
+  if (!action.type) errors.push("Type is required")
+  if (!action.method) errors.push("HTTP Method is required")
+  return errors
+}
+
 const ActionList: React.FC<{
   actions: Action[]
   onEdit: (action: Action) => void
@@ -184,6 +195,13 @@ const OptionsPage: React.FC = () => {
   }
 
   const handleSaveAction = (actionToSave: Action) => {
+    const errors = validateAction(actionToSave)
+    if (errors.length > 0) {
+      setStatus(errors.join(", "))
+      setTimeout(() => setStatus(""), 5000)
+      return
+    }
+
     const actionIndex = actions.findIndex((a) => a.id === actionToSave.id)
     let newActions: Action[]
     if (actionIndex >= 0) {
