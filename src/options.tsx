@@ -80,9 +80,17 @@ const OptionsPage: React.FC = () => {
       reader.onload = (e) => {
         try {
           const importedActions = JSON.parse(e.target?.result as string)
-          setActions(importedActions)
-          setStatus("Actions imported successfully!")
-          setTimeout(() => setStatus(""), 3000)
+          const confirmImport = window.confirm(
+            `Are you sure you want to import ${importedActions.length} actions? This will replace your current actions.`
+          )
+          if (confirmImport) {
+            setActions(importedActions)
+            setStatus("Actions imported successfully!")
+            setTimeout(() => setStatus(""), 3000)
+          } else {
+            setStatus("Import cancelled.")
+            setTimeout(() => setStatus(""), 3000)
+          }
         } catch (error) {
           setStatus("Error importing actions. Please check the file format.")
           setTimeout(() => setStatus(""), 3000)
