@@ -80,7 +80,7 @@ function setupContextMenuListener() {
 
         chrome.notifications.create({
           type: "basic",
-          iconUrl: "/assets/icon.png",
+          iconUrl: "assets/icon.png",
           title: "Action Executed",
           message: `The action "${action.name}" was executed successfully.`
         })
