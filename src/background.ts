@@ -82,13 +82,15 @@ function setupContextMenuListener() {
           fetch(url, requestOptions)
         }
 
-        chrome.notifications.create({
-          type: "basic",
-          silent: true,
-          iconUrl: icon,
-          title: "Hookie Action Executed",
-          message: `The action "${action.name}" was executed successfully.`
-        })
+        if (action.type !== ActionType.Redirect) {
+          chrome.notifications.create({
+            type: "basic",
+            silent: true,
+            iconUrl: icon,
+            title: "Hookie Action Executed",
+            message: `The action "${action.name}" was executed successfully.`
+          })
+        }
       }
     })
   })
