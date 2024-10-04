@@ -53,28 +53,33 @@ function setupContextMenuListener() {
           }
           chrome.tabs.create({ url })
         } else {
-          if (action.method === "GET") {
-            let url = `${action.url}?${action.parameter}=${paramValue}`
-            if (action.context === "selection") {
-              url += `&url=${encodeURIComponent(additionalParams.url)}`
+          const requestOptions: RequestInit = {
+            method: action.method,
+            headers: {
+              "Content-Type": "application/json"
             }
-            fetch(url)
-          } else if (action.method === "POST") {
-            let body: { [key: string]: string } = {
-              [action.parameter]: paramValue
-            }
-            if (action.context === "selection") {
-              body.url = additionalParams.url
-            }
-            fetch(action.url, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify(body)
+          }
+
+          if (action.method === "POST") {
+            requestOptions.body = JSON.stringify({
+              [action.parameter]: paramValue,
+              ...(action.context === "selection" && { url: additionalParams.url })
             })
           }
+
+          const url = `${action.url}?${action.parameter}=${paramValue}${
+            action.context === "selection" ? `&url=${encodeURIComponent(additionalParams.url)}` : ""
+          }`
+
+          fetch(url, requestOptions)
         }
+
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: "assets/icon.png",
+          title: "Action Executed",
+          message: `The action "${action.name}" was executed successfully.`
+        })
       }
     })
   })
