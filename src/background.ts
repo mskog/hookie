@@ -78,10 +78,9 @@ function setupContextMenuListener() {
           fetch(url, requestOptions)
         }
 
-        console.log(`Executing action: ${action.name}`);
         chrome.notifications.create({
           type: "basic",
-          iconUrl: "assets/icon.png",
+          iconUrl: "https://bellard.org/bpg/2.png",
           title: "Action Executed",
           message: `The action "${action.name}" was executed successfully.`
         })
