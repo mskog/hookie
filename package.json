@@ -34,7 +34,8 @@
 		"permissions": [
 			"contextMenus",
 			"storage",
-			"tabs"
+			"tabs",
+			"notifications"
 		]
 	}
 }

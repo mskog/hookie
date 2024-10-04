@@ -1,3 +1,5 @@
+import icon from "url:~assets/icon.png"
+
 import type { Action } from "./types"
 import { ActionType } from "./types"
 
@@ -80,8 +82,9 @@ function setupContextMenuListener() {
 
         chrome.notifications.create({
           type: "basic",
-          iconUrl: "assets/icon.png",
-          title: "Action Executed",
+          silent: true,
+          iconUrl: icon,
+          title: "Hookie Action Executed",
           message: `The action "${action.name}" was executed successfully.`
         })
       }
