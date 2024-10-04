@@ -54,7 +54,9 @@ function setupContextMenuListener() {
             url += `&url=${encodeURIComponent(additionalParams.url)}`
           }
           chrome.tabs.create({ url })
-        } else {
+        }
+
+        if (action.type !== ActionType.Redirect) {
           const requestOptions: RequestInit = {
             method: action.method,
             headers: {
