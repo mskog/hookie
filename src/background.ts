@@ -78,6 +78,7 @@ function setupContextMenuListener() {
           fetch(url, requestOptions)
         }
 
+        console.log(`Executing action: ${action.name}`);
         chrome.notifications.create({
           type: "basic",
           iconUrl: "assets/icon.png",
