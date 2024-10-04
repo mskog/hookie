@@ -63,12 +63,16 @@ function setupContextMenuListener() {
           if (action.method === "POST") {
             requestOptions.body = JSON.stringify({
               [action.parameter]: paramValue,
-              ...(action.context === "selection" && { url: additionalParams.url })
+              ...(action.context === "selection" && {
+                url: additionalParams.url
+              })
             })
           }
 
           const url = `${action.url}?${action.parameter}=${paramValue}${
-            action.context === "selection" ? `&url=${encodeURIComponent(additionalParams.url)}` : ""
+            action.context === "selection"
+              ? `&url=${encodeURIComponent(additionalParams.url)}`
+              : ""
           }`
 
           fetch(url, requestOptions)
@@ -76,7 +80,7 @@ function setupContextMenuListener() {
 
         chrome.notifications.create({
           type: "basic",
-          iconUrl: "assets/icon.png",
+          iconUrl: "/assets/icon.png",
           title: "Action Executed",
           message: `The action "${action.name}" was executed successfully.`
         })
