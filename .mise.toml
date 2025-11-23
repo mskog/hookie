@@ -1,2 +1,14 @@
 [tools]
 node = "20"
+
+[tasks.build]
+alias = "b"
+run = "npm run build"
+
+[tasks.develop]
+alias = "d"
+run = "npm run dev"
+
+[tasks.package]
+alias = "p"
+run = "npm run package"
