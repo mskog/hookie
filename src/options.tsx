@@ -13,30 +13,32 @@ const ActionList: React.FC<{
   onDelete: (action: Action) => void
 }> = ({ actions, onEdit, onDelete }) => (
   <div className="space-y-4">
-    {[...actions].sort((a, b) => a.name.localeCompare(b.name)).map((action) => (
-      <div
-        key={action.id}
-        className="p-4 transition-shadow duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
-        <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
-        <p className="text-sm text-gray-600">URL: {action.url}</p>
-        <p className="text-sm text-gray-600">Parameter: {action.parameter}</p>
-        <p className="text-sm text-gray-600">Type: {action.type}</p>
-        <p className="text-sm text-gray-600">Context: {action.context}</p>
-        <p className="text-sm text-gray-600">HTTP Method: {action.method}</p>
-        <div className="mt-3 space-x-2">
-          <button
-            onClick={() => onEdit(action)}
-            className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-            Edit
-          </button>
-          <button
-            onClick={() => onDelete(action)}
-            className="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-            Delete
-          </button>
+    {[...actions]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((action) => (
+        <div
+          key={action.id}
+          className="p-4 transition-shadow duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
+          <h3 className="text-lg font-semibold text-gray-800">{action.name}</h3>
+          <p className="text-sm text-gray-600">URL: {action.url}</p>
+          <p className="text-sm text-gray-600">Parameter: {action.parameter}</p>
+          <p className="text-sm text-gray-600">Type: {action.type}</p>
+          <p className="text-sm text-gray-600">Context: {action.context}</p>
+          <p className="text-sm text-gray-600">HTTP Method: {action.method}</p>
+          <div className="mt-3 space-x-2">
+            <button
+              onClick={() => onEdit(action)}
+              className="px-3 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+              Edit
+            </button>
+            <button
+              onClick={() => onDelete(action)}
+              className="px-3 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
-    ))}
+      ))}
   </div>
 )
 
@@ -72,7 +74,9 @@ const OptionsPage: React.FC = () => {
   }
 
   const handleDeleteAction = (actionToDelete: Action) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete the action "${actionToDelete.name}"?`)
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the action "${actionToDelete.name}"?`
+    )
     if (confirmDelete) {
       const newActions = actions.filter(
         (action) => action.id !== actionToDelete.id
