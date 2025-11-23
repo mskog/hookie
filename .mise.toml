@@ -1,14 +1,2 @@
 [tools]
 node = "20"
-
-[tasks.dev]
-run = "npm run dev"
-description = "Start development server"
-
-[tasks.build]
-run = "npm run build"
-description = "Build the extension"
-
-[tasks.package]
-run = "npm run package"
-description = "Package the extension"

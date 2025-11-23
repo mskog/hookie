@@ -13,7 +13,7 @@ const ActionList: React.FC<{
   onDelete: (action: Action) => void
 }> = ({ actions, onEdit, onDelete }) => (
   <div className="space-y-4">
-    {actions.map((action) => (
+    {[...actions].sort((a, b) => a.name.localeCompare(b.name)).map((action) => (
       <div
         key={action.id}
         className="p-4 transition-shadow duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md">
