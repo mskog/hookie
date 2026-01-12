@@ -12,7 +12,7 @@
 	"dependencies": {
 		"npm": "^10.8.2",
 		"plasmo": "0.88.0",
-		"react": "18.2.0",
+		"react": "19.2.3",
 		"react-dom": "19.2.3",
 		"uuid": "^10.0.0"
 	},
@@ -20,7 +20,7 @@
 		"@ianvs/prettier-plugin-sort-imports": "4.1.1",
 		"@types/chrome": "0.0.258",
 		"@types/node": "20.11.5",
-		"@types/react": "18.2.48",
+		"@types/react": "19.2.8",
 		"@types/react-dom": "19.2.3",
 		"@types/uuid": "^10.0.0",
 		"prettier": "3.2.4",
