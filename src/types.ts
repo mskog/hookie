@@ -11,4 +11,5 @@ export interface Action {
   context: chrome.contextMenus.ContextType
   type: ActionType
   method: "GET" | "POST"
+  showNotification: boolean
 }

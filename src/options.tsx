@@ -25,6 +25,9 @@ const ActionList: React.FC<{
           <p className="text-sm text-gray-600">Type: {action.type}</p>
           <p className="text-sm text-gray-600">Context: {action.context}</p>
           <p className="text-sm text-gray-600">HTTP Method: {action.method}</p>
+          <p className="text-sm text-gray-600">
+            Notification: {action.showNotification !== false ? "Yes" : "No"}
+          </p>
           <div className="mt-3 space-x-2">
             <button
               onClick={() => onEdit(action)}
@@ -62,7 +65,8 @@ const OptionsPage: React.FC = () => {
       parameter: "",
       context: "page",
       type: ActionType.Background,
-      method: "GET"
+      method: "GET",
+      showNotification: true
     }
     setEditingAction(newAction)
     setActiveTab("form")

@@ -168,6 +168,26 @@ const ActionForm: React.FC<ActionFormProps> = ({
             <p className="mt-1 text-sm text-red-500">{errors.method}</p>
           )}
         </div>
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            name="showNotification"
+            id="showNotification"
+            checked={editingAction.showNotification !== false}
+            onChange={(e) =>
+              setEditingAction((prev) => ({
+                ...prev,
+                showNotification: e.target.checked
+              }))
+            }
+            className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label
+            htmlFor="showNotification"
+            className="ml-2 text-sm font-medium text-gray-700">
+            Show notification when action executes
+          </label>
+        </div>
       </div>
       <div className="mt-6 space-x-2">
         <button

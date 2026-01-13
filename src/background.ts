@@ -82,7 +82,10 @@ function setupContextMenuListener() {
           fetch(url, requestOptions)
         }
 
-        if (action.type !== ActionType.Redirect) {
+        if (
+          action.type !== ActionType.Redirect &&
+          action.showNotification !== false
+        ) {
           chrome.notifications.create({
             type: "basic",
             silent: true,

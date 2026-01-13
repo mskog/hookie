@@ -1,3 +1,9 @@
+# ⚠️ WARNING: AI CODED GARBAGE ⚠️
+
+**This is AI coded garbage and should not be used by anyone.**
+
+---
+
 # Hookie - Custom Context Menu Actions for Chrome
 
 Hookie is a Chrome extension that allows users to create custom context menu actions for various web interactions. Built with [Plasmo](https://docs.plasmo.com/), it provides a flexible way to enhance your browsing experience by adding personalized actions to your right-click menu.
