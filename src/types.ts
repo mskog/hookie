@@ -8,7 +8,7 @@ export interface Action {
   url: string
   name: string
   parameter: string
-  context: chrome.contextMenus.ContextType
+  context: `${chrome.contextMenus.ContextType}`
   type: ActionType
   method: "GET" | "POST"
   showNotification: boolean

@@ -14,7 +14,8 @@ This file contains context and instructions for AI coding assistants to help wit
 ## Common Development Commands
 
 ### Development Server
-- `npm install` or `pnpm install` - Install dependencies
+- **Node 24 LTS** (pinned in `.mise.toml` only — never add `engines.node` to `package.json`, Parcel then targets Node and stops bundling `node_modules`); npm only (`package-lock.json`)
+- `npm install` - Install dependencies
 - `npm run dev` or `pnpm dev` - Start Plasmo development server with hot reload
 - `npm run build` or `pnpm build` - Create production build in `build/chrome-mv3-prod/`
 - `npm run package` or `pnpm package` - Create distributable extension package
@@ -290,6 +291,17 @@ Failing to update CLAUDE.md means the next AI assistant session will lack your i
 ---
 
 ### 🆕 ADD NEW LEARNINGS BELOW THIS LINE (newest first) 🆕
+
+### Node 24 + Plasmo 0.90 Upgrade
+
+**Date**: 2026-10-04
+
+**Key Learnings**:
+1. **tsconfig `extends` must be a relative file path**: `./node_modules/plasmo/templates/tsconfig.base.json`. With `plasmo/templates/tsconfig.base` (package specifier), Parcel 2.9's Rust resolver fails with `TsConfigExtendsNotFound`/`UnknownError`, which Plasmo surfaces only as a misleading `Failed to resolve '../../src/options.tsx'` (or `url:~assets/icon.png`). The real Parcel diagnostic is invisible even with `--verbose`.
+2. **`@types/chrome` ≥0.1 types**: `chrome.storage.sync.get` callbacks yield `unknown` values (cast `result.actions as Action[]`), and `ContextType` is an enum, so string contexts use `` `${chrome.contextMenus.ContextType}` `` (matching what `contextMenus.create({ contexts })` expects).
+3. **React and react-dom must share a major** (Dependabot once bumped only react-dom to 19); both are on 19 now.
+4. **npm 11 blocks install scripts** (`npm install-scripts ls`); the build works without approving them because sharp/swc/lmdb/@parcel/watcher ship prebuilt binaries.
+5. **No `engines.node` in package.json**: Parcel treats it as a Node target and excludes `node_modules` from bundles, so the options page dies at runtime with `Cannot find module 'react/jsx-runtime'` while the build reports success. Symptom in output: `"react/jsx-runtime":"react/jsx-runtime"` self-mappings and a tiny options bundle.
 
 ### Initial Project Structure - Plasmo Extension Setup
 

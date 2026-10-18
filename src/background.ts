@@ -7,7 +7,7 @@ export {}
 
 function setupContextMenu() {
   chrome.storage.sync.get({ actions: [] }, (result) => {
-    const actions: Action[] = result.actions
+    const actions = result.actions as Action[]
 
     chrome.contextMenus.removeAll(() => {
       actions.forEach((action) => {
@@ -24,7 +24,7 @@ function setupContextMenu() {
 function setupContextMenuListener() {
   chrome.contextMenus.onClicked.addListener((event, tab) => {
     chrome.storage.sync.get({ actions: [] }, (result) => {
-      const actions: Action[] = result.actions
+      const actions = result.actions as Action[]
       const action = actions.find((action) => action.id === event.menuItemId)
 
       if (action) {

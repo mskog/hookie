@@ -53,7 +53,7 @@ const OptionsPage: React.FC = () => {
 
   useEffect(() => {
     chrome.storage.sync.get({ actions: [] }, (items) => {
-      setActions(items.actions)
+      setActions(items.actions as Action[])
     })
   }, [])
 
