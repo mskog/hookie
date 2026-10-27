@@ -18,9 +18,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Allow both direct and indirect updates
+    # Transitive updates are Plasmo internals we can't steer
     allow:
-      - dependency-type: "all"
+      - dependency-type: "direct"
     # Add labels to PRs for easier filtering
     labels:
       - "dependencies"
