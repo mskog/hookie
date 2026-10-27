@@ -18,7 +18,7 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # Transitive updates are Plasmo internals we can't steer; security updates still cover them
+    # Transitive updates are Plasmo internals we can't steer
     allow:
       - dependency-type: "direct"
     # Add labels to PRs for easier filtering
