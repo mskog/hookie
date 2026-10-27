@@ -292,6 +292,16 @@ Failing to update CLAUDE.md means the next AI assistant session will lack your i
 
 ### 🆕 ADD NEW LEARNINGS BELOW THIS LINE (newest first) 🆕
 
+### CI Workflow
+
+**Date**: 2026-10-27
+
+**Key Learnings**:
+1. **CI**: `.github/workflows/ci.yml` runs `npm ci`, `npx tsc --noEmit`, `npm run build` on PRs and `main`. Node comes from `.mise.toml` via `jdx/mise-action`, so don't pin a Node version in the workflow.
+2. **`npm ci` fails on Node 20 / npm 10** (lockfile looks out of sync). Use Node 24 via mise. If `node -v` shows 20, the shell isn't picking up mise.
+3. **`tsconfig.tsbuildinfo` is untracked** (`*.tsbuildinfo` in `.gitignore`); the old `.tsbuildinfo` pattern didn't match it, which caused merge conflicts.
+4. **Plasmo's last release is 0.90.5 (2025-05)**: the ~77 `npm audit` findings come from its parcel/sharp/svelte toolchain, are build-time only, and can't be fixed downstream.
+
 ### Node 24 + Plasmo 0.90 Upgrade
 
 **Date**: 2026-10-04
