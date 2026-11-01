@@ -12,4 +12,5 @@ export interface Action {
   type: ActionType
   method: "GET" | "POST"
   showNotification: boolean
+  authToken?: string
 }
