@@ -57,11 +57,17 @@ function setupContextMenuListener() {
         }
 
         if (action.type !== ActionType.Redirect) {
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json"
+          }
+
+          if (action.authToken) {
+            headers["Authorization"] = `Bearer ${action.authToken}`
+          }
+
           const requestOptions: RequestInit = {
             method: action.method,
-            headers: {
-              "Content-Type": "application/json"
-            }
+            headers
           }
 
           if (action.method === "POST") {

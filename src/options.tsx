@@ -66,7 +66,8 @@ const OptionsPage: React.FC = () => {
       context: "page",
       type: ActionType.Background,
       method: "GET",
-      showNotification: true
+      showNotification: true,
+      authToken: ""
     }
     setEditingAction(newAction)
     setActiveTab("form")
