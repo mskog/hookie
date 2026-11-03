@@ -21,14 +21,10 @@ Hookie is a Chrome extension that allows users to create custom context menu act
 1. Clone this repository
 2. Install dependencies:
    ```bash
-   pnpm install
-   # or
    npm install
    ```
 3. Run the development server:
    ```bash
-   pnpm dev
-   # or
    npm run dev
    ```
 4. Load the extension in Chrome:
@@ -42,12 +38,10 @@ Hookie is a Chrome extension that allows users to create custom context menu act
 To create a production bundle:
 
 ```bash
-pnpm build
-# or
 npm run build
 ```
 
-This will generate a production-ready bundle in the `build` directory.
+This will generate a production-ready bundle in `build/chrome-mv3-prod`.
 
 ## Contributing
 

@@ -3,8 +3,6 @@ import icon from "url:~assets/icon.png"
 import type { Action } from "./types"
 import { ActionType } from "./types"
 
-export {}
-
 function setupContextMenu() {
   chrome.storage.sync.get({ actions: [] }, (result) => {
     const actions = result.actions as Action[]
@@ -36,7 +34,7 @@ function setupContextMenuListener() {
             paramValue = event.selectionText
               ? encodeURIComponent(event.selectionText)
               : event.pageUrl
-            additionalParams.url = event.pageUrl // Add the current page URL
+            additionalParams.url = event.pageUrl
             break
           case "link":
             paramValue = event.linkUrl || event.pageUrl
@@ -105,7 +103,6 @@ function setupContextMenuListener() {
   })
 }
 
-setupContextMenu()
 setupContextMenuListener()
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -115,4 +112,3 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 })
 
 chrome.runtime.onInstalled.addListener(setupContextMenu)
-chrome.runtime.onStartup.addListener(setupContextMenu)
