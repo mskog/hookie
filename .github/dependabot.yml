@@ -21,10 +21,6 @@ updates:
     # Transitive updates are Plasmo internals we can't steer
     allow:
       - dependency-type: "direct"
-    # Add labels to PRs for easier filtering
-    labels:
-      - "dependencies"
-      - "automated"
     # Prefix commit messages
     commit-message:
       prefix: "deps"

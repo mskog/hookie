@@ -1,7 +1,6 @@
 import "~style.css"
 
 import React, { useEffect, useState } from "react"
-import { v4 as uuidv4 } from "uuid"
 
 import ActionForm from "./components/ActionForm"
 import type { Action } from "./types"
@@ -59,7 +58,7 @@ const OptionsPage: React.FC = () => {
 
   const handleAddAction = () => {
     const newAction: Action = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       url: "",
       name: "",
       parameter: "",

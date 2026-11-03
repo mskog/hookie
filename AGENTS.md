@@ -1,345 +1,75 @@
-# AGENTS.md - AI Development Assistant Guidelines
-
-This file contains context and instructions for AI coding assistants to help with development tasks in this Chrome extension project.
-
-## 🚨 MANDATORY REQUIREMENTS - READ THIS FIRST 🚨
-
-### ⚠️ ABSOLUTE REQUIREMENTS ⚠️
-
-- **CODE QUALITY IS NON-NEGOTIABLE**: Every change must maintain high code quality standards
-- **TESTING**: All new functionality should be testable and verifiable
-- **TYPE SAFETY**: TypeScript types must be complete and accurate
-- **NO EXCEPTIONS**: There are zero exceptions to these code quality requirements
-
-## Common Development Commands
-
-### Development Server
-- **Node 24 LTS** (pinned in `.mise.toml` only — never add `engines.node` to `package.json`, Parcel then targets Node and stops bundling `node_modules`); npm only (`package-lock.json`)
-- `npm install` - Install dependencies
-- `npm run dev` or `pnpm dev` - Start Plasmo development server with hot reload
-- `npm run build` or `pnpm build` - Create production build in `build/chrome-mv3-prod/`
-- `npm run package` or `pnpm package` - Create distributable extension package
-
-### Loading Extension
-1. Navigate to `chrome://extensions/`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
-4. Select `build/chrome-mv3-dev/` for development or `build/chrome-mv3-prod/` for production
-
-### Code Quality
-- **TypeScript**: Run `tsc --noEmit` to check types without emitting files
-- **Prettier**: `npx prettier --write .` to format code
-- **Import Sorting**: Uses `@ianvs/prettier-plugin-sort-imports` automatically
-
-## Project Overview
-
-**Hookie** is a Chrome MV3 extension for creating custom context menu actions. Built with Plasmo framework, React, TypeScript, and Tailwind CSS.
-
-### Key Features
-- Custom context menu actions for page, selection, link, image, video, audio
-- Redirect or background (API call) action types
-- GET/POST HTTP methods
-- Import/export functionality for action configurations
-- Chrome sync storage for cross-device action persistence
-
-## Architecture Overview
-
-### Core Files
-- **`src/background.ts`**: Service worker handling context menu creation, click events, and notifications
-- **`src/options.tsx`**: Options page UI for managing actions (list, add, edit, delete, import/export)
-- **`src/content.tsx`**: Content script (currently minimal, matches plasmo.com only)
-- **`src/types.ts`**: TypeScript interfaces and enums (`Action`, `ActionType`)
-- **`src/components/ActionForm.tsx`**: Form component for creating/editing actions
-
-### Key Patterns
-- **Chrome Storage Sync**: All actions stored in `chrome.storage.sync` for cross-device sync
-- **UUID Identifiers**: Actions use `uuid` library for unique IDs
-- **Context Menu API**: Dynamic context menu creation based on stored actions
-- **React State Management**: Local state with `useState`, Chrome storage sync with `useEffect`
-- **Plasmo Framework**: Provides manifest generation, hot reload, and extension build tooling
-
-### Data Flow
-1. User configures actions in options page (`options.tsx`)
-2. Actions saved to `chrome.storage.sync`
-3. Background script (`background.ts`) listens for storage changes and rebuilds context menus
-4. User right-clicks in browser, triggering context menu item
-5. Background script executes action (redirect or API call)
-6. Notifications shown for background actions
-
-## TypeScript Standards
-
-### Type Safety
-- **All files must use TypeScript** - No plain JavaScript files
-- **No `any` types** - Use proper types or `unknown` with type guards
-- **Interfaces over types** - Prefer `interface` for object shapes, `type` for unions/intersections
-- **Explicit return types** - All functions should have explicit return type annotations
-
-### Examples
-- See `src/types.ts` for interface patterns
-- See `src/background.ts` for Chrome API typing patterns
-- See `src/options.tsx` for React TypeScript patterns
-
-## Development Patterns
-
-### Chrome Extension APIs
-- **Manifest V3**: Uses service worker instead of background page
-- **Permissions**: `contextMenus`, `storage`, `tabs`, `notifications`
-- **Host Permissions**: `https://*/*` for API calls
-- **Storage Sync**: Max 100KB total, 8KB per item, 512 items max
-
-### React & Tailwind
-- **TailwindCSS v3**: Utility-first styling with `tailwind.config.js`
-- **Mobile-first**: Use responsive classes (`sm:`, `md:`, `lg:`)
-- **Component Pattern**: Functional components with TypeScript props interfaces
-- **State Management**: `useState` for local state, `useEffect` for Chrome storage sync
-
-### Plasmo Framework
-- **Config**: Uses `PlasmoCSConfig` for content script configuration
-- **Build**: Automatically generates manifest.json from package.json manifest field
-- **Hot Reload**: Development server watches for changes and rebuilds
-- **Environment**: `process.env.PLASMO_PUBLIC_*` for public env vars
-
-### Code Standards
-- **Prettier**: Auto-formats on save with import sorting plugin
-- **File Organization**: Components in `src/components/`, utilities in root `src/`
-- **Named Exports**: Prefer default exports for page components, named exports for utilities
-
-### 🚫 NO COMMENTS - TypeScript Is Self-Documenting
-
-**CRITICAL**: This project follows a STRICT no-comment philosophy. Comments should be **EXTREMELY RARE**.
-
-**TypeScript code with proper naming and types is self-documenting. If you think you need a comment, you probably need better naming or types instead.**
-
-#### When Comments Are FORBIDDEN:
-- ❌ **NEVER** add comments that explain what the code does - the code itself should make this obvious
-- ❌ **NEVER** add comments like `// Loop through actions` or `// Save to storage` - these are obvious from the code
-- ❌ **NEVER** add section dividers like `// Handlers`, `// State`, `// Effects` - code structure should make sections obvious
-- ❌ **NEVER** add comments to appease linters or fill empty space
-- ❌ **NEVER** add TODO comments - use GitHub issues instead
-
-#### When Comments Are BARELY Acceptable (Use Sparingly):
-- ✅ Complex Chrome API quirks that aren't obvious from documentation (with link to Chrome docs)
-- ✅ Non-obvious algorithmic decisions with performance implications
-- ✅ Workarounds for browser/framework bugs (with link to issue)
-- ✅ Explaining "why" something unusual is done (never "what")
-
-#### The Test:
-**Before adding ANY comment, ask yourself:**
-1. Can I rename variables/functions to make this obvious? (YES = no comment needed)
-2. Can I add TypeScript types to clarify intent? (YES = no comment needed)
-3. Is this explaining "what" the code does? (YES = delete the comment)
-4. Would a TypeScript developer understand this without the comment? (YES = delete the comment)
-
-**If in doubt, DON'T add the comment. Code should speak for itself.**
-
-### 🔁 Rule of Three - Refactoring Duplications
-
-**MANDATORY PRINCIPLE**: Only refactor code duplication when it appears **3 or more times**.
-
-#### The Rule
-- **1st instance**: Write the code
-- **2nd instance**: Copy/paste with modifications (duplication is acceptable)
-- **3rd instance**: NOW refactor - extract to shared component/utility/hook
-
-#### Why This Matters
-- **Premature abstraction is expensive**: Early refactoring often creates wrong abstractions
-- **Two instances aren't enough data**: You don't yet know the true pattern
-- **Three instances reveal the pattern**: Now you understand what should be abstracted
-- **Keeps code simple**: Avoid over-engineering and unnecessary indirection
-
-#### Examples
-
-**DO NOT Refactor** (only 2 instances):
-```tsx
-// Two similar form fields - this is OK
-<input type="text" value={name} onChange={e => setName(e.target.value)} />
-<input type="text" value={url} onChange={e => setUrl(e.target.value)} />
-```
-
-**DO Refactor** (3+ instances):
-```tsx
-// Three identical form fields - TIME TO REFACTOR!
-<input type="text" value={name} onChange={e => setName(e.target.value)} className="..." />
-<input type="text" value={url} onChange={e => setUrl(e.target.value)} className="..." />
-<input type="text" value={param} onChange={e => setParam(e.target.value)} className="..." />
-
-// Refactor to:
-<TextField value={name} onChange={setName} />
-<TextField value={url} onChange={setUrl} />
-<TextField value={param} onChange={setParam} />
-```
-
-#### Application
-- **Components**: 3+ identical JSX blocks → extract to component
-- **Hooks**: 3+ components with same state logic → extract to custom hook
-- **Utilities**: 3+ files with same logic → extract to utility function
-- **Styles**: 3+ components with same Tailwind classes → extract to component or use @apply
-
-**Remember**: Duplication is cheaper than the wrong abstraction. Wait for the third instance.
-
-## 📚 KNOWLEDGE MANAGEMENT - MANDATORY 📚
-
-### EVERY Task Must Update CLAUDE.md
-
-**REQUIRED**: Before marking any task as complete, you MUST update the CLAUDE.md file with useful information learned during the task.
-
-#### What to Document:
-- **New patterns discovered** - Component patterns, Chrome API usage, architectural decisions
-- **File locations** - Where specific functionality lives, especially if non-obvious
-- **Gotchas and pitfalls** - Chrome API quirks, Plasmo framework issues, browser inconsistencies
-- **Commands that worked** - Especially if different from documented or if new
-- **TypeScript patterns** - Type definitions, generic patterns, utility types
-- **Chrome API quirks** - Behavior of context menus, storage, notifications, tabs API
-- **Plasmo patterns** - Build configuration, manifest generation, content script config
-- **React patterns** - Hooks usage, state management, component composition
-- **Performance notes** - Storage limits, API rate limits, rendering optimizations
-
-#### How to Update:
-1. **Identify the right section** - Add to existing relevant sections (Architecture, Development Patterns, etc.)
-2. **Keep it concise** - Bullet points, clear and actionable
-3. **Be specific** - Include file paths, function names, examples
-4. **Update existing info** - If you found something outdated, fix it
-5. **Don't create sprawl** - Fit new info into existing structure when possible
-6. **Check file size after editing** - Run `wc -c CLAUDE.md` to check character count
-
-#### 📏 File Size Management - MANDATORY
-
-**CRITICAL**: After editing CLAUDE.md, you MUST check the file size:
-
-```bash
-wc -c CLAUDE.md
-```
-
-**If file exceeds 40,000 characters**, you MUST compact it by following these steps IN ORDER:
-
-1. **Promote valuable learnings to main sections** - Before deleting old Recent Learnings entries:
-   - Extract reusable patterns and add to Development Patterns section
-   - Move Chrome API gotchas to Architecture Overview or create new "Chrome Extension Patterns" section if needed
-   - Add discovered commands to Common Development Commands
-   - Promote architecture insights to Architecture Overview
-   - Keep the original learning entry condensed or remove it after promotion
-
-2. **Condense older learnings** - For entries older than 3-6 months:
-   - Extract the single most valuable insight into a 1-3 bullet point summary
-   - Remove narrative context, full code examples, and step-by-step details
-   - Keep the essence: what pattern to use, what to avoid, why it matters
-
-3. **Remove outdated learnings** - Delete entirely when:
-   - Pattern already documented in main sections
-   - Information duplicates Chrome/Plasmo documentation
-   - Context is no longer relevant (deprecated APIs, old versions)
-   - Learning is too specific to one-time scenarios
-
-4. **Simplify verbose sections** - Convert paragraphs to bullet points, remove redundant examples
-
-5. **Deduplicate** - Remove content that appears in multiple sections
-
-**What makes a learning worth promoting to main sections:**
-- ✅ Reusable pattern that applies to future work (Chrome API usage, storage patterns)
-- ✅ Critical gotcha that could break things (MV3 migration issues, storage limits)
-- ✅ Non-obvious convention specific to this codebase (action structure, context handling)
-- ✅ Command or workflow that should be standard practice (build process, debugging)
-- ❌ One-time fix or feature-specific implementation details
-- ❌ Temporary workarounds that should eventually be removed
-- ❌ Common Chrome API patterns documented elsewhere
-
-**Priority for keeping content**:
-- Type safety requirements (NEVER remove or condense)
-- Core architecture patterns
-- Critical gotchas and Chrome API warnings
-- Recent Learnings from last 3 months (full detail)
-- Promoted patterns in main sections (distilled form)
-- Rule of Three and code standards
-
-**Priority for removal/condensing**:
-- Recent Learnings older than 6 months (promote or condense first)
-- Redundant examples and verbose explanations
-- Content that duplicates Chrome/Plasmo documentation
-- Detailed narrative context from old learnings (keep the pattern, remove the story)
-
-**Goal**: Keep file focused, actionable, and under 40,000 characters. Graduate valuable learnings from time-indexed (Recent Learnings) to topic-indexed (main sections) for better discoverability.
-
-#### Examples of Good Updates:
-- "Context menu actions stored in `chrome.storage.sync` with 100KB total limit across all data"
-- "Background service worker must use `chrome.contextMenus.removeAll()` before recreating menus to avoid duplicates"
-- "Plasmo auto-generates manifest.json from package.json `manifest` field - never edit manifest.json directly"
-- "Action IDs use `uuid` library for collision-free identifiers across devices"
-
-#### Warning:
-Failing to update CLAUDE.md means the next AI assistant session will lack your insights. Document generously to build institutional knowledge.
-
----
-
-## 📖 RECENT LEARNINGS 📖
-
-**PURPOSE**: This section captures institutional knowledge from completed tasks. Future AI assistant sessions rely on these insights.
-
-**INSTRUCTIONS FOR UPDATING**:
-1. Add new entries BELOW this header section, in reverse chronological order (newest first)
-2. Use the template format shown below
-3. Include: Date, Context, Implementation Details, Key Learnings, Benefits
-4. Be specific: include file paths, patterns, gotchas, and code examples
-5. Keep it actionable: future assistants should be able to apply your learnings immediately
-
-**WHEN TO ADD AN ENTRY**:
-- Discovered a non-obvious pattern or convention
-- Learned about file organization or architecture decisions
-- Found a gotcha or pitfall that cost time to figure out
-- Implemented a reusable pattern that should be followed
-- Learned something about tooling, commands, or configuration
-
----
-
-### 🆕 ADD NEW LEARNINGS BELOW THIS LINE (newest first) 🆕
-
-### CI Workflow
-
-**Date**: 2026-10-27
-
-**Key Learnings**:
-1. **CI**: `.github/workflows/ci.yml` runs `npm ci`, `npx tsc --noEmit`, `npm run build` on PRs and `main`. Node comes from `.mise.toml` via `jdx/mise-action`, so don't pin a Node version in the workflow.
-2. **`npm ci` fails on Node 20 / npm 10** (lockfile looks out of sync). Use Node 24 via mise. If `node -v` shows 20, the shell isn't picking up mise.
-3. **`tsconfig.tsbuildinfo` is untracked** (`*.tsbuildinfo` in `.gitignore`); the old `.tsbuildinfo` pattern didn't match it, which caused merge conflicts.
-4. **Plasmo's last release is 0.90.5 (2025-05)**: the ~77 `npm audit` findings come from its parcel/sharp/svelte toolchain, are build-time only, and can't be fixed downstream.
-
-### Node 24 + Plasmo 0.90 Upgrade
-
-**Date**: 2026-10-04
-
-**Key Learnings**:
-1. **tsconfig `extends` must be a relative file path**: `./node_modules/plasmo/templates/tsconfig.base.json`. With `plasmo/templates/tsconfig.base` (package specifier), Parcel 2.9's Rust resolver fails with `TsConfigExtendsNotFound`/`UnknownError`, which Plasmo surfaces only as a misleading `Failed to resolve '../../src/options.tsx'` (or `url:~assets/icon.png`). The real Parcel diagnostic is invisible even with `--verbose`.
-2. **`@types/chrome` ≥0.1 types**: `chrome.storage.sync.get` callbacks yield `unknown` values (cast `result.actions as Action[]`), and `ContextType` is an enum, so string contexts use `` `${chrome.contextMenus.ContextType}` `` (matching what `contextMenus.create({ contexts })` expects).
-3. **React and react-dom must share a major** (Dependabot once bumped only react-dom to 19); both are on 19 now.
-4. **npm 11 blocks install scripts** (`npm install-scripts ls`); the build works without approving them because sharp/swc/lmdb/@parcel/watcher ship prebuilt binaries.
-5. **No `engines.node` in package.json**: Parcel treats it as a Node target and excludes `node_modules` from bundles, so the options page dies at runtime with `Cannot find module 'react/jsx-runtime'` while the build reports success. Symptom in output: `"react/jsx-runtime":"react/jsx-runtime"` self-mappings and a tiny options bundle.
-
-### Initial Project Structure - Plasmo Extension Setup
-
-**Date**: 2025-11-23
-
-**Context**: Initial Hookie Chrome extension structure using Plasmo framework v0.88.0 with TypeScript, React 18, and Tailwind CSS v3.
-
-**Architecture Details**:
-- **Plasmo Framework**: Handles manifest generation, hot reload, and build process
-- **Entry Points**: `background.ts` (service worker), `options.tsx` (options page), `content.tsx` (content script)
-- **Storage**: Uses `chrome.storage.sync` for cross-device action persistence
-- **Context Menus**: Dynamic creation based on stored actions, rebuilt on storage changes
-- **Action Types**: Redirect (opens new tab) or Background (API call with notification)
-
-**Key Learnings**:
-1. **Plasmo manifest generation**: Package.json `manifest` field auto-generates manifest.json - never edit manifest.json directly
-2. **MV3 service worker**: Background script is a service worker, not a persistent background page
-3. **Storage sync limits**: 100KB total, 8KB per item, 512 items max - must stay within limits
-4. **Context menu rebuilding**: Must call `chrome.contextMenus.removeAll()` before recreating to avoid duplicates
-5. **UUID for action IDs**: Using `uuid` library ensures collision-free identifiers across devices
-6. **Storage change listener**: Background script listens to `chrome.storage.onChanged` to rebuild menus when actions updated
-7. **Notification pattern**: Background actions show silent notifications with custom icon from `url:~assets/icon.png`
-
-**Files Structure**:
-- `src/background.ts` - Context menu setup and click handling
-- `src/options.tsx` - Options page with action list and form
-- `src/types.ts` - TypeScript interfaces (`Action`, `ActionType`)
-- `src/components/ActionForm.tsx` - Action creation/editing form
-- `package.json` - Dependencies and manifest permissions
-
-**Benefits**: Clean separation of concerns with Plasmo conventions, type-safe Chrome API usage, automatic manifest generation, and hot reload development experience.
+# AGENTS.md
+
+Instructions for AI coding assistants working on Hookie. `CLAUDE.md` is a pointer to this file, so edit this one.
+
+## What Hookie is
+
+A Chrome MV3 extension for custom context-menu actions: right-click a page, selection, link, image, video or audio, and Hookie either opens a URL (Redirect) or calls an endpoint in the background (Background, GET or POST, optional Bearer token). Built with Plasmo, React 19, TypeScript and Tailwind CSS v3.
+
+## Commands
+
+- **Node 24 LTS**, pinned in `.mise.toml` only. Never add `engines.node` to `package.json` (see Gotchas). npm only (`package-lock.json`).
+- `npm install`: install dependencies
+- `npm run dev`: Plasmo dev server with hot reload, output in `build/chrome-mv3-dev/`
+- `npm run build`: production build in `build/chrome-mv3-prod/`
+- `npm run package`: zip a distributable package
+- `npx tsc --noEmit`: type check
+- `npx prettier --write .`: format (imports are sorted by `@ianvs/prettier-plugin-sort-imports`)
+
+Load the extension at `chrome://extensions/` → Developer mode → Load unpacked → the build directory.
+
+## Verifying a change
+
+There is no test suite. A change is done when:
+
+1. `npx tsc --noEmit` and `npm run build` pass (CI runs `npm ci`, both of these, on PRs and `main`)
+2. The build looks right: check `build/chrome-mv3-prod/manifest.json` when touching `package.json` or entry points, and the options bundle size (about 236k; a tiny bundle means React wasn't bundled)
+3. Anything user-facing has been tried in Chrome with the unpacked build
+
+## Architecture
+
+- **`src/background.ts`**: service worker. Builds context menus from stored actions and handles clicks: works out the value to send from the click context, then opens a tab (Redirect) or calls `fetch` and shows a notification (Background).
+- **`src/options.tsx`**: options page. Action list, add/edit, delete, import/export (JSON file of `Action[]`).
+- **`src/components/ActionForm.tsx`**: the add/edit form and its validation.
+- **`src/types.ts`**: `Action` interface and `ActionType` enum.
+
+Data flow: the options page writes `actions` to `chrome.storage.sync` → `chrome.storage.onChanged` in the background rebuilds the menus → a click looks the action up by menu item id and runs it.
+
+- Action ids come from `crypto.randomUUID()`.
+- Menus are built on `runtime.onInstalled` and on storage changes only. Chrome keeps context menus between browser restarts, so they are not rebuilt each time the worker wakes.
+- Listeners (`contextMenus.onClicked`, `storage.onChanged`, `runtime.onInstalled`) must be registered synchronously at the top level of the worker, or MV3 drops events that wake it.
+- Plasmo generates `manifest.json` from the `manifest` field in `package.json`. Never edit a manifest by hand.
+- Permissions: `contextMenus`, `storage`, `tabs`, `notifications`. Host permissions are `https://*/*` only, so Background actions can't call plain `http://` endpoints.
+
+## Gotchas
+
+- **All actions are one sync item.** `chrome.storage.sync` allows 8KB per item (100KB total), so saving fails at around 30 actions, and the failure isn't surfaced yet (#67).
+- **No `engines.node` in `package.json`.** Parcel treats it as a Node target and stops bundling `node_modules`. The build reports success, but the options page dies with `Cannot find module 'react/jsx-runtime'`. Symptom: `"react/jsx-runtime":"react/jsx-runtime"` self-mappings and a tiny options bundle.
+- **tsconfig `extends` must be a relative file path** (`./node_modules/plasmo/templates/tsconfig.base.json`). A package specifier makes Parcel fail, and Plasmo reports it only as a misleading `Failed to resolve '../../src/options.tsx'`.
+- **tsconfig overrides for TypeScript 6/7**: `moduleResolution: "bundler"` (Plasmo's base uses the removed `node`/`node10`), no `baseUrl` (removed; `paths` are relative to the tsconfig), `types: ["chrome"]` (`@types/*` are no longer picked up automatically) and `noUncheckedSideEffectImports: false` (for `import "~style.css"`). All of these work on TS 5.9 too.
+- **Plasmo's base tsconfig sets `strict: false`.** Don't assume strict null checks catch anything.
+- **`@types/chrome` ≥0.1**: `storage.sync.get` yields `unknown` values (cast `result.actions as Action[]`), and `ContextType` is an enum, so string contexts are typed `` `${chrome.contextMenus.ContextType}` ``.
+- **React and react-dom must share a major.** Dependabot has bumped only one of them before.
+- **Plasmo's last release is 0.90.5 (2025-05).** The ~77 `npm audit` findings come from its parcel/sharp/svelte toolchain. They are build-time only and can't be fixed downstream.
+- **npm 11 blocks install scripts.** The build works without approving them because sharp/swc/lmdb/@parcel/watcher ship prebuilt binaries.
+- **`npm ci` fails on Node 20 / npm 10** (the lockfile looks out of sync). If `node -v` shows 20, the shell isn't picking up mise.
+- **Tailwind 4 is not a drop-in bump.** The PostCSS plugin moved to `@tailwindcss/postcss`, and the config moves into CSS.
+
+## Code standards
+
+- TypeScript only. No `any`: use real types, or `unknown` with a type guard.
+- `interface` for object shapes, `type` for unions and intersections.
+- Components are functional, with a props interface. `useState` for local state, `useEffect` for storage sync.
+- Default exports for page components, named exports for utilities. Components go in `src/components/`.
+
+### No comments
+
+Code with good names and types documents itself. Don't write comments that say what the code does, section dividers, or TODOs (open a GitHub issue instead). A comment is acceptable only to explain _why_ something unusual is done: a Chrome API quirk or a browser/framework workaround, with a link to the docs or issue.
+
+### Rule of three
+
+Refactor duplication only when it appears three or more times. Duplication is cheaper than the wrong abstraction, and two instances aren't enough to show the real pattern. This applies to components, hooks, utilities and repeated Tailwind class sets alike.
+
+## Keeping this file current
+
+When a task teaches something the next session would otherwise have to rediscover (a gotcha, a command, a convention), add it to the matching section above, in a line or two. Fix anything here that turned out to be wrong. Don't add a dated changelog. Git history already has one.
